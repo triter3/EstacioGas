@@ -20,7 +20,7 @@ public class MainScreen extends javax.swing.JFrame implements java.awt.event.Key
     private static final String INFOPANEL = "info panel";
 
     public MainScreen() {
-        //setUndecorated(true); //sense bordes
+        //setUndecorated(true); //sense bordes, no es necessari
         initComponents();
         mainPanel.add(new StartPanel(new StartPanel.PanelListener() {
             @Override
