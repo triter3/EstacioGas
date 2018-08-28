@@ -18,6 +18,7 @@ public class MainScreen extends javax.swing.JFrame implements java.awt.event.Key
 
     private static final String STARTPANEL = "start panel";
     private static final String INFOPANEL = "info panel";
+    private InfoPanel infoPanel;
 
     public MainScreen() {
         //setUndecorated(true); //sense bordes, no es necessari
@@ -29,17 +30,24 @@ public class MainScreen extends javax.swing.JFrame implements java.awt.event.Key
             }
         }), STARTPANEL);
         
-        mainPanel.add(new InfoPanel(new InfoPanel.EndListener() {
+        mainPanel.add(infoPanel = new InfoPanel(new InfoPanel.EndListener() {
             @Override
             public void endPanel() {
                 changePanel(STARTPANEL);
             }
         }), INFOPANEL);
+        
+        infoPanel.addKeyListener(infoPanel);
+        infoPanel.setFocusable(true);
     }
     
+    private boolean firstTime = true;
     private void changePanel(String name) {
         java.awt.CardLayout cl = (java.awt.CardLayout) mainPanel.getLayout();
         cl.show(mainPanel, name);
+        if(name == INFOPANEL) {
+            infoPanel.requestFocusInWindow();
+        }
     }
 
     /**
