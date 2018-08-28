@@ -5,33 +5,48 @@
  */
 package estaciogas.view;
 
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import javax.swing.JButton;
 
 
 /**
  *
  * @author eduard
  */
-public class StartPanel extends javax.swing.JPanel {
+public class StartPanel extends javax.swing.JPanel implements java.awt.event.KeyListener {
     
     public interface PanelListener {
-        void clicked();
+        void startSession();
+        void startMemberSession(String cardCode);
     }
     
     private PanelListener listener;
-
-
+    
     /**
      * Creates new form StartPanel
      */
     public StartPanel(PanelListener listener) {
+        buffer = new char[10];
         this.listener = listener;
         initComponents();
+        titleText.setText("Clica a la pantalla per començar");
+        splitPanel.setVisible(false);
+        JButton rightBtn = (JButton) splitPanel.getRightComponent();
+        JButton leftBtn = (JButton) splitPanel.getLeftComponent();
+        rightBtn.setText("Socis");
+        leftBtn.setText("No Socis");
+        rightBtn.setFont(new java.awt.Font("Arial", java.awt.Font.PLAIN, 30));
+        leftBtn.setFont(new java.awt.Font("Arial", java.awt.Font.PLAIN, 30));
         titleText.addMouseListener(new MouseListener() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                listener.clicked();
+                //canvi a els botons
+                titleText.setVisible(false);
+                splitPanel.setVisible(true);
             }
 
             @Override
@@ -55,6 +70,27 @@ public class StartPanel extends javax.swing.JPanel {
             }
    
         });
+        
+        rightBtn.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                splitPanel.setVisible(false);
+                titleText.setText("Passa la targeta per el lector");
+                titleText.setVisible(true);
+            }
+        });
+        
+        leftBtn.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                listener.startSession();
+            }
+        });
+        
+    }
+    
+    private void cardDetected(String code) {
+        listener.startMemberSession(code);
     }
 
     /**
@@ -66,7 +102,9 @@ public class StartPanel extends javax.swing.JPanel {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        jLayeredPane1 = new javax.swing.JLayeredPane();
         titleText = new javax.swing.JLabel();
+        splitPanel = new javax.swing.JSplitPane();
 
         setBackground(new java.awt.Color(133, 187, 251));
 
@@ -75,20 +113,82 @@ public class StartPanel extends javax.swing.JPanel {
         titleText.setText("Clica a la pantalla per començar");
         titleText.setToolTipText("");
 
+        splitPanel.setResizeWeight(0.5);
+        splitPanel.setName("aa"); // NOI18N
+
+        jLayeredPane1.setLayer(titleText, javax.swing.JLayeredPane.DEFAULT_LAYER);
+        jLayeredPane1.setLayer(splitPanel, javax.swing.JLayeredPane.DEFAULT_LAYER);
+
+        javax.swing.GroupLayout jLayeredPane1Layout = new javax.swing.GroupLayout(jLayeredPane1);
+        jLayeredPane1.setLayout(jLayeredPane1Layout);
+        jLayeredPane1Layout.setHorizontalGroup(
+            jLayeredPane1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 436, Short.MAX_VALUE)
+            .addGroup(jLayeredPane1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addComponent(titleText, javax.swing.GroupLayout.DEFAULT_SIZE, 436, Short.MAX_VALUE))
+            .addGroup(jLayeredPane1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(jLayeredPane1Layout.createSequentialGroup()
+                    .addContainerGap()
+                    .addComponent(splitPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 412, Short.MAX_VALUE)
+                    .addContainerGap()))
+        );
+        jLayeredPane1Layout.setVerticalGroup(
+            jLayeredPane1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 377, Short.MAX_VALUE)
+            .addGroup(jLayeredPane1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addComponent(titleText, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 213, Short.MAX_VALUE))
+            .addGroup(jLayeredPane1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(jLayeredPane1Layout.createSequentialGroup()
+                    .addContainerGap()
+                    .addComponent(splitPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 353, Short.MAX_VALUE)
+                    .addContainerGap()))
+        );
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(titleText, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addComponent(jLayeredPane1)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(titleText, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addComponent(jLayeredPane1)
         );
     }// </editor-fold>//GEN-END:initComponents
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JLayeredPane jLayeredPane1;
+    private javax.swing.JSplitPane splitPanel;
     private javax.swing.JLabel titleText;
     // End of variables declaration//GEN-END:variables
+    
+        //Card detection
+    private char[] buffer;
+    private int pointer = 0;
+    
+    @Override
+    public void keyTyped(KeyEvent e) {
+       if(pointer <= 9 && e.getKeyChar() >= '0' && e.getKeyChar() <= '9') {
+           buffer[pointer] = e.getKeyChar();
+           pointer++;
+       } else {
+           if(pointer == 10 && e.getKeyChar() == '\n') {
+               cardDetected(String.valueOf(buffer));  
+           } 
+           pointer = 0;
+       }
+       
+    }
+
+    @Override
+    public void keyPressed(KeyEvent e) {
+      
+    }
+
+    @Override
+    public void keyReleased(KeyEvent e) {
+       
+    }
 }
+

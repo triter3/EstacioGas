@@ -19,13 +19,22 @@ public class MainScreen extends javax.swing.JFrame implements java.awt.event.Key
     private static final String STARTPANEL = "start panel";
     private static final String INFOPANEL = "info panel";
     private InfoPanel infoPanel;
+    private StartPanel startPanel;
 
     public MainScreen() {
         //setUndecorated(true); //sense bordes, no es necessari
         initComponents();
-        mainPanel.add(new StartPanel(new StartPanel.PanelListener() {
+        mainPanel.add(startPanel = new StartPanel(new StartPanel.PanelListener() {
             @Override
-            public void clicked() {
+            public void startSession() {
+                //carregar gasolina
+                //infoPanel.setUser(null, gasolina)
+                changePanel(INFOPANEL);
+            }
+            
+             @Override
+            public void startMemberSession(String cardCode) {
+                //carregar usuari i gasolina
                 changePanel(INFOPANEL);
             }
         }), STARTPANEL);
@@ -37,16 +46,16 @@ public class MainScreen extends javax.swing.JFrame implements java.awt.event.Key
             }
         }), INFOPANEL);
         
-        infoPanel.addKeyListener(infoPanel);
-        infoPanel.setFocusable(true);
+        startPanel.addKeyListener(startPanel);
+        startPanel.setFocusable(true);
     }
     
     private boolean firstTime = true;
     private void changePanel(String name) {
         java.awt.CardLayout cl = (java.awt.CardLayout) mainPanel.getLayout();
         cl.show(mainPanel, name);
-        if(name == INFOPANEL) {
-            infoPanel.requestFocusInWindow();
+        if(name == STARTPANEL) {
+            startPanel.requestFocusInWindow();
         }
     }
 

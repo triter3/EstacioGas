@@ -12,7 +12,7 @@ import java.awt.event.KeyEvent;
  *
  * @author eduard
  */
-public class InfoPanel extends javax.swing.JPanel implements java.awt.event.KeyListener {
+public class InfoPanel extends javax.swing.JPanel {
     
     private void cardDetected(String code) {
         System.out.println("card detected");
@@ -29,7 +29,6 @@ public class InfoPanel extends javax.swing.JPanel implements java.awt.event.KeyL
      * Creates new form InfoPanel
      */
     public InfoPanel(EndListener listener) {
-        buffer = new char[10];
         this.listener = listener;
         
         initComponents();
@@ -163,33 +162,4 @@ public class InfoPanel extends javax.swing.JPanel implements java.awt.event.KeyL
     private javax.swing.JLabel nameTxt;
     private javax.swing.JLabel titleTxt;
     // End of variables declaration//GEN-END:variables
-
-    //Card detection
-    private char[] buffer;
-    private int pointer = 0;
-    
-    @Override
-    public void keyTyped(KeyEvent e) {
-       if(pointer <= 9 && e.getKeyChar() >= '0' && e.getKeyChar() <= '9') {
-           buffer[pointer] = e.getKeyChar();
-           pointer++;
-       } else {
-           if(pointer == 10 && e.getKeyChar() == '\n') {
-               cardDetected(String.valueOf(buffer));  
-           } 
-           pointer = 0;
-       }
-       
-    }
-
-    @Override
-    public void keyPressed(KeyEvent e) {
-      
-    }
-
-    @Override
-    public void keyReleased(KeyEvent e) {
-       
-    }
-
 }
