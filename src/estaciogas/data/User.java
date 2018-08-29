@@ -1,4 +1,4 @@
-package data;
+package estaciogas.data;
 
 /*
  * To change this license header, choose License Headers in Project Properties.

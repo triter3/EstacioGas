@@ -5,6 +5,7 @@
  */
 package estaciogas.view;
 
+import estaciogas.data.User;
 import java.awt.Point;
 import java.awt.Toolkit;
 import java.awt.event.KeyEvent;
@@ -26,16 +27,11 @@ public class MainScreen extends javax.swing.JFrame implements java.awt.event.Key
         initComponents();
         mainPanel.add(startPanel = new StartPanel(new StartPanel.PanelListener() {
             @Override
-            public void startSession() {
-                //carregar gasolina
-                //infoPanel.setUser(null, gasolina)
-                changePanel(INFOPANEL);
-            }
-            
-             @Override
-            public void startMemberSession(String cardCode) {
-                //carregar usuari i gasolina
-                changePanel(INFOPANEL);
+            public void startSession(User user, float gasolinePrice) {
+                /*
+                * Passar informacio a infoPanel.
+                */
+                changePanel(INFOPANEL); //carrega a la pantalla principan InfoPanel
             }
         }), STARTPANEL);
         

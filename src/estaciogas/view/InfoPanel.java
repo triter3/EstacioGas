@@ -5,8 +5,8 @@
  */
 package estaciogas.view;
 
-import data.User;
-import data.dbController;
+import estaciogas.data.User;
+import estaciogas.data.dbController;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 import java.sql.SQLException;

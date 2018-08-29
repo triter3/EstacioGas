@@ -5,11 +5,14 @@
  */
 package estaciogas.view;
 
+import estaciogas.data.User;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.JButton;
 
 
@@ -20,11 +23,51 @@ import javax.swing.JButton;
 public class StartPanel extends javax.swing.JPanel implements java.awt.event.KeyListener {
     
     public interface PanelListener {
-        void startSession();
-        void startMemberSession(String cardCode);
+        void startSession(User user, float gasolinePrice);
+    }
+    
+    private enum ScreenState {
+       START_SCREEN,
+       SELECT_SCREEN,
+       CARD_SCREEN,
+       ERROR_CARD_SCREEN
     }
     
     private PanelListener listener;
+    private ScreenState state;
+    
+    private void changeScreen(ScreenState state) {
+        switch(state) {
+            case START_SCREEN:
+                buttonsPanel.setVisible(false);
+                textPanel.setVisible(true);
+                titleText.setText("Clica a la pantalla per començar");
+                break;
+            case SELECT_SCREEN:
+                textPanel.setVisible(false);
+                buttonsPanel.setVisible(true);
+                break;
+            case CARD_SCREEN:
+                buttonsPanel.setVisible(false);
+                textPanel.setVisible(true);
+                titleText.setText("<html>Passa la tarjecta per el lector<br>Clica la pantalla per tornar al menú principal</html>");
+                break;
+            case ERROR_CARD_SCREEN:
+                buttonsPanel.setVisible(false);
+                textPanel.setVisible(true);
+                titleText.setText("Targeta incorrecte");
+                {
+                    try {
+                        Thread.sleep(500);
+                    } catch (InterruptedException ex) {
+                        Logger.getLogger(StartPanel.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                }
+                changeScreen(ScreenState.START_SCREEN);
+                break;
+        }
+        this.state = state;
+    }
     
     /**
      * Creates new form StartPanel
@@ -33,8 +76,7 @@ public class StartPanel extends javax.swing.JPanel implements java.awt.event.Key
         buffer = new char[10];
         this.listener = listener;
         initComponents();
-        titleText.setText("Clica a la pantalla per començar");
-        splitPanel.setVisible(false);
+        changeScreen(ScreenState.START_SCREEN);
         JButton rightBtn = (JButton) splitPanel.getRightComponent();
         JButton leftBtn = (JButton) splitPanel.getLeftComponent();
         rightBtn.setText("Socis");
@@ -45,8 +87,11 @@ public class StartPanel extends javax.swing.JPanel implements java.awt.event.Key
             @Override
             public void mouseClicked(MouseEvent e) {
                 //canvi a els botons
-                titleText.setVisible(false);
-                splitPanel.setVisible(true);
+                if(state == ScreenState.START_SCREEN) {
+                    changeScreen(ScreenState.SELECT_SCREEN);
+                } else {
+                    changeScreen(ScreenState.START_SCREEN);
+                }
             }
 
             @Override
@@ -74,23 +119,28 @@ public class StartPanel extends javax.swing.JPanel implements java.awt.event.Key
         rightBtn.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                splitPanel.setVisible(false);
-                titleText.setText("Passa la targeta per el lector");
-                titleText.setVisible(true);
+                changeScreen(ScreenState.CARD_SCREEN);
             }
         });
         
         leftBtn.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                listener.startSession();
+                /*
+                * Agafar gasolina 
+                */
+                //listener.startSession(null, preu gasolina);
             }
         });
         
     }
     
     private void cardDetected(String code) {
-        listener.startMemberSession(code);
+         /*
+        * Agafar Usuari i gasolina 
+        * si l'usuari no es correcte cridar changeScreen(ScreenState.ERROR_CARD_SCREEN);
+        */
+        //listener.startSession(user, preu gasolina);
     }
 
     /**
@@ -103,45 +153,73 @@ public class StartPanel extends javax.swing.JPanel implements java.awt.event.Key
     private void initComponents() {
 
         jLayeredPane1 = new javax.swing.JLayeredPane();
+        textPanel = new javax.swing.JPanel();
         titleText = new javax.swing.JLabel();
+        buttonsPanel = new javax.swing.JPanel();
         splitPanel = new javax.swing.JSplitPane();
 
         setBackground(new java.awt.Color(133, 187, 251));
+
+        textPanel.setBackground(new java.awt.Color(133, 187, 251));
 
         titleText.setFont(new java.awt.Font("Ubuntu", 1, 24)); // NOI18N
         titleText.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         titleText.setText("Clica a la pantalla per començar");
         titleText.setToolTipText("");
 
+        javax.swing.GroupLayout textPanelLayout = new javax.swing.GroupLayout(textPanel);
+        textPanel.setLayout(textPanelLayout);
+        textPanelLayout.setHorizontalGroup(
+            textPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(titleText, javax.swing.GroupLayout.DEFAULT_SIZE, 799, Short.MAX_VALUE)
+        );
+        textPanelLayout.setVerticalGroup(
+            textPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(titleText, javax.swing.GroupLayout.DEFAULT_SIZE, 432, Short.MAX_VALUE)
+        );
+
+        buttonsPanel.setBackground(new java.awt.Color(133, 187, 251));
+
         splitPanel.setResizeWeight(0.5);
         splitPanel.setName("aa"); // NOI18N
 
-        jLayeredPane1.setLayer(titleText, javax.swing.JLayeredPane.DEFAULT_LAYER);
-        jLayeredPane1.setLayer(splitPanel, javax.swing.JLayeredPane.DEFAULT_LAYER);
+        javax.swing.GroupLayout buttonsPanelLayout = new javax.swing.GroupLayout(buttonsPanel);
+        buttonsPanel.setLayout(buttonsPanelLayout);
+        buttonsPanelLayout.setHorizontalGroup(
+            buttonsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 799, Short.MAX_VALUE)
+            .addGroup(buttonsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(buttonsPanelLayout.createSequentialGroup()
+                    .addContainerGap()
+                    .addComponent(splitPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 775, Short.MAX_VALUE)
+                    .addContainerGap()))
+        );
+        buttonsPanelLayout.setVerticalGroup(
+            buttonsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 432, Short.MAX_VALUE)
+            .addGroup(buttonsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(buttonsPanelLayout.createSequentialGroup()
+                    .addContainerGap()
+                    .addComponent(splitPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 408, Short.MAX_VALUE)
+                    .addContainerGap()))
+        );
+
+        jLayeredPane1.setLayer(textPanel, javax.swing.JLayeredPane.DEFAULT_LAYER);
+        jLayeredPane1.setLayer(buttonsPanel, javax.swing.JLayeredPane.DEFAULT_LAYER);
 
         javax.swing.GroupLayout jLayeredPane1Layout = new javax.swing.GroupLayout(jLayeredPane1);
         jLayeredPane1.setLayout(jLayeredPane1Layout);
         jLayeredPane1Layout.setHorizontalGroup(
             jLayeredPane1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 436, Short.MAX_VALUE)
+            .addComponent(textPanel, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
             .addGroup(jLayeredPane1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                .addComponent(titleText, javax.swing.GroupLayout.DEFAULT_SIZE, 436, Short.MAX_VALUE))
-            .addGroup(jLayeredPane1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                .addGroup(jLayeredPane1Layout.createSequentialGroup()
-                    .addContainerGap()
-                    .addComponent(splitPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 412, Short.MAX_VALUE)
-                    .addContainerGap()))
+                .addComponent(buttonsPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         jLayeredPane1Layout.setVerticalGroup(
             jLayeredPane1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 377, Short.MAX_VALUE)
+            .addComponent(textPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
             .addGroup(jLayeredPane1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                .addComponent(titleText, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 213, Short.MAX_VALUE))
-            .addGroup(jLayeredPane1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                .addGroup(jLayeredPane1Layout.createSequentialGroup()
-                    .addContainerGap()
-                    .addComponent(splitPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 353, Short.MAX_VALUE)
-                    .addContainerGap()))
+                .addComponent(buttonsPanel, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
@@ -158,8 +236,10 @@ public class StartPanel extends javax.swing.JPanel implements java.awt.event.Key
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JPanel buttonsPanel;
     private javax.swing.JLayeredPane jLayeredPane1;
     private javax.swing.JSplitPane splitPanel;
+    private javax.swing.JPanel textPanel;
     private javax.swing.JLabel titleText;
     // End of variables declaration//GEN-END:variables
     
