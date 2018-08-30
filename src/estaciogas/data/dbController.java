@@ -23,8 +23,6 @@ public class dbController {
     private static final String password = "hola";
     
     Connection c = null;
-    Statement stmt = null;
-    ResultSet rs = null;
   
     public void connect() {
         try {
@@ -47,29 +45,39 @@ public class dbController {
     //return user with card_id or null if card_id not exists
     public User getUser(String card_id) throws SQLException {
         User auxUser = null;
-        stmt = c.createStatement();
-        String query = "SELECT name, id, card_id, monthly_payament, hangar_number,"+
-        " hangar_position FROM plane p, member m WHERE p.registration =" + 
-        " m.plane_registration AND m.card_id = '" + card_id + "';";
-
-        rs = stmt.executeQuery( query );
-        if (rs.next())  {
+        Statement stmtUser = c.createStatement();
+        Statement stmtPlane = c.createStatement();
+        String queryUser = "SELECT name, id, card_id, monthly_payament, plane_registration " + 
+        "FROM member WHERE card_id = '" + card_id + "';";
+        ResultSet rsUser = stmtUser.executeQuery( queryUser );
+        
+        if (rsUser.next())  {
            auxUser = new User();
-           auxUser.setName(rs.getString("name"));
-           auxUser.setId(rs.getInt("id"));
-           auxUser.setCard_id(rs.getString("card_id"));
-           //auxUser.setPayment_method(rs.getString("telephone"));
-           auxUser.setHangar_name(rs.getString("hangar_number"));
-           auxUser.setHangar_place(rs.getString("hangar_position"));
-           //mirar si se li  permet treure o no            
+           auxUser.setName(rsUser.getString("name"));
+           auxUser.setId(rsUser.getInt("id"));
+           auxUser.setCard_id(rsUser.getString("card_id"));
+           //auxUser.setPayment_method(rs.getString("monthly_payment"));
+           //mirar si se li  permet treure o no  
+           String matricula = rsUser.getString("plane_registration");
+           if (matricula != null) {
+               String queryPlane = "SELECT *  FROM plane WHERE registration = '" + matricula +"';";
+               ResultSet rsPlane = stmtPlane.executeQuery( queryPlane );
+               if (rsPlane.next()) {
+                   System.out.println("entra");
+                auxUser.setHangar_name(rsPlane.getString("hangar_number"));
+                auxUser.setHangar_place(rsPlane.getString("hangar_position"));
+               }
+               rsPlane.close();
+               stmtPlane.close();
+           }
         }
-        rs.close();
-        stmt.close();
+        rsUser.close();
+        stmtUser.close();
         return auxUser;
     }
     
     public void saveRefuel(Refuel refuel) throws SQLException {
-       stmt = c.createStatement();
+       Statement stmt = c.createStatement();
        String query = "INSERT INTO refuel (member_id, liters, price, price_liters) VALUES (" 
                + Integer.toString(refuel.getMember_id()) + ", " + Float.toString(refuel.getLiters())
                + ", " + Float.toString(refuel.getPrice()) + ", "
@@ -79,7 +87,7 @@ public class dbController {
     }
     
     public float getFuelPrice(boolean partner) throws SQLException {
-        stmt = c.createStatement();
+        Statement stmt = c.createStatement();
         String query;
         
         if (partner) {
@@ -89,7 +97,7 @@ public class dbController {
             query =  "SELECT * FROM gasoline_price;";        
         }
         
-        rs = stmt.executeQuery( query );
+        ResultSet rs = stmt.executeQuery( query );
         if(!rs.next()){
             System.out.println("no hi ha cap preu");
             return -1;
