@@ -31,6 +31,7 @@ public class MainScreen extends javax.swing.JFrame {
                 /*
                 * Passar informacio a infoPanel.
                 */
+                infoPanel.setPanelInfo(user, gasolinePrice);
                 changePanel(INFOPANEL); //carrega a la pantalla principan InfoPanel
             }
         }), STARTPANEL);

@@ -5,39 +5,37 @@
  */
 package estaciogas.view;
 
+import estaciogas.data.Refuel;
+import estaciogas.data.Ticket;
 import estaciogas.data.User;
 import estaciogas.data.dbController;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 import java.sql.SQLException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
  * @author eduard
  */
 public class InfoPanel extends javax.swing.JPanel {
-    dbController db = null;
-    boolean userIsPartner;
-    float fuelPrice;
-    String name;
-    //String payment_type
+    User user;
+    Refuel refuel;
+    float fuelPrice, liters, finalPrice;
     
-    public void setPanelInfo(User user, dbController db) throws SQLException {
-        this.db = db;
-        if (user == null) {
-            userIsPartner = false;
-            fuelPrice = db.getFuelPrice(false);     
-        }
-        else {
-            userIsPartner = true;
-            fuelPrice = db.getFuelPrice(true);
-            String aux = "Benvingut " + user.getName();
-            nameTxt.setText(aux);
+    
+    public void setPanelInfo(User user, float fuelPrice) {
+        this.user = user;
+        this.fuelPrice = fuelPrice;
+        if (user != null) {
+           String aux = "Benvingut " + user.getName();
+           nameTxt.setText(aux); 
         }
         jLabel2.setText(Float.toString(fuelPrice));
-        
     }
     
+    //Sha de trure aquesta funcio???
     private void cardDetected(String code) {
         System.out.println("card detected");
         System.out.println(code);
@@ -54,14 +52,26 @@ public class InfoPanel extends javax.swing.JPanel {
      */
     public InfoPanel(EndListener listener) {
         this.listener = listener;
+        this.refuel = new Refuel();
+        this.liters = this.finalPrice = 0;
+        this.user = null;
         
         initComponents();
-        endBtn.addActionListener(new java.awt.event.ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                //canviar pantalla
-                listener.endPanel();
-            }
+        endBtn.addActionListener((ActionEvent e) -> {
+            //canviar pantalla
+            Ticket ticket = new Ticket();
+            ticket.printTicket(user, refuel);
+            dbController db = new dbController();
+            db.connect();
+            
+            //descomentar quan el refuel estigui inicialitzat
+            /*try {
+                db.saveRefuel(refuel);
+            } catch (SQLException ex) {
+                Logger.getLogger(InfoPanel.class.getName()).log(Level.SEVERE, null, ex);
+            }*/
+            db.disconnect();
+            listener.endPanel();
         });
     }
 
@@ -95,7 +105,6 @@ public class InfoPanel extends javax.swing.JPanel {
         infoTxt1.setText("Gasolina (€/l):");
 
         nameTxt.setFont(new java.awt.Font("Ubuntu", 0, 18)); // NOI18N
-        nameTxt.setText("Pasi la targeta pel lector per efectuar la operació com a soci");
 
         jLabel1.setFont(new java.awt.Font("Ubuntu", 0, 18)); // NOI18N
         jLabel1.setForeground(new java.awt.Color(27, 27, 27));
@@ -165,9 +174,9 @@ public class InfoPanel extends javax.swing.JPanel {
                     .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                         .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 86, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addComponent(infoTxt1)))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 20, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 31, Short.MAX_VALUE)
                 .addComponent(nameTxt)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 129, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 139, Short.MAX_VALUE)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel5, javax.swing.GroupLayout.PREFERRED_SIZE, 109, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel4))

@@ -6,11 +6,13 @@
 package estaciogas.view;
 
 import estaciogas.data.User;
+import estaciogas.data.dbController;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.sql.SQLException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JButton;
@@ -133,7 +135,16 @@ public class StartPanel extends javax.swing.JPanel implements java.awt.event.Key
                 /*
                 * Agafar gasolina 
                 */
-                //listener.startSession(null, preu gasolina);
+                dbController db = new dbController();
+                db.connect();
+                float fuelPrice = 0;             
+                try {
+                    fuelPrice = db.getFuelPrice(false);
+                } catch (SQLException ex) {
+                    Logger.getLogger(StartPanel.class.getName()).log(Level.SEVERE, null, ex);
+                }
+                db.disconnect();        
+                listener.startSession(null, fuelPrice);
             }
         });
         
@@ -142,9 +153,25 @@ public class StartPanel extends javax.swing.JPanel implements java.awt.event.Key
     private void cardDetected(String code) {
          /*
         * Agafar Usuari i gasolina 
-        * si l'usuari no es correcte cridar changeScreen(ScreenState.ERROR_CARD_SCREEN);
+        * si l'usuari no es correcte cridar 
         */
-        //listener.startSession(user, preu gasolina);
+        float fuelPrice = 0;
+        dbController db = new dbController();
+        db.connect();
+        User user = null;
+        try {
+            user = db.getUser(code);
+            if (user == null) {
+                changeScreen(ScreenState.ERROR_CARD_SCREEN);   
+            }
+            else {
+                fuelPrice = db.getFuelPrice(true);
+            }
+        } catch (SQLException ex) {
+            //tractar sql error
+        }
+        db.disconnect();
+        listener.startSession(user, fuelPrice); 
     }
 
     /**

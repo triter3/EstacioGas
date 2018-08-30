@@ -5,7 +5,7 @@
  */
 package estaciogas.data;
 
-import estaciogas.data.Refuel;
+import java.time.LocalDateTime;    
 import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.Graphics;
@@ -20,9 +20,7 @@ import java.awt.print.PrinterException;
 import java.awt.print.PrinterJob;
 import java.io.File;
 import java.io.IOException;
-import java.util.Date;
-import java.util.Calendar;
-import java.util.GregorianCalendar;
+import java.time.format.DateTimeFormatter;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.imageio.ImageIO;
@@ -80,14 +78,13 @@ public class Ticket implements Printable{
       this.refuel = refuel;
       PrinterJob pj = PrinterJob.getPrinterJob();        
       pj.setPrintable(this,getPageFormat(pj));
-      try {
-           pj.print();
+      try {        
+           pj.print();  
       }
        catch (PrinterException ex) {
       }
     
   }
-  
   
   private void drawCenteredString(String s, int w, int h, Graphics g) {
     FontMetrics fm = g.getFontMetrics();
@@ -102,11 +99,12 @@ public class Ticket implements Printable{
   }
   
   private void drawUserInfo(Graphics2D g2d) {
-      String auxString;
-      Date d  = new Date();
-      Calendar c = new GregorianCalendar();
-      c.setTime(d);     
-       
+      DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");  
+      LocalDateTime now = LocalDateTime.now();
+      String aux = now.format(dtf);
+      drawEndString(aux, WIDTH, y, g2d); y+=15;
+      
+      
   }
  
   private void drawHeader(Graphics2D g2d) {
@@ -126,8 +124,12 @@ public class Ticket implements Printable{
     drawCenteredString("- - - - - - - - - - - - - - - - - - - -", 66, y, g2d); y+= 15;
   }
   
+  private void drawRefuelInfo(Graphics g) {
+      
+  }
+  
   @Override
-  public int print(Graphics graphics, PageFormat pageFormat, int pageIndex) throws PrinterException {
+  public int print(Graphics graphics, PageFormat pageFormat, int pageIndex) {
      int result = NO_SUCH_PAGE;    
         if (pageIndex == 0) {   
             Graphics2D g2d = (Graphics2D) graphics;
@@ -135,8 +137,7 @@ public class Ticket implements Printable{
             result = PAGE_EXISTS;
             drawHeader(g2d);
             drawUserInfo(g2d);
-            
-       
+            drawRefuelInfo(g2d);
         }    
         return result;   
   }
