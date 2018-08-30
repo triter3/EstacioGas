@@ -16,6 +16,8 @@ import java.sql.SQLException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JButton;
+import java.util.Timer;
+import java.util.TimerTask;
 
 
 /**
@@ -41,6 +43,8 @@ public class StartPanel extends javax.swing.JPanel implements java.awt.event.Key
     
     private PanelListener listener;
     private ScreenState state;
+    private Timer timer; 
+    private TimerTask task;
     
     private void changeScreen(ScreenState state) {
         switch(state) {
@@ -48,29 +52,31 @@ public class StartPanel extends javax.swing.JPanel implements java.awt.event.Key
                 buttonsPanel.setVisible(false);
                 textPanel.setVisible(true);
                 titleText.setText("Clica a la pantalla per començar");
+                if(task != null) {
+                    task.cancel();
+                }
+                task = null;
                 break;
             case SELECT_SCREEN:
                 textPanel.setVisible(false);
                 buttonsPanel.setVisible(true);
+                if(task != null) task.cancel();
+                timer.schedule(task = new StateTimer(), 15000);
                 break;
             case CARD_SCREEN:
                 buttonsPanel.setVisible(false);
                 textPanel.setVisible(true);
                 titleText.setText("<html><div style='text-align: center;'>Passa la tarjecta per el lector<br><br>"
                         + "<div><font size=-1>Clica la pantalla per tornar al menú principal </div> </div></html>");
+                if(task != null) task.cancel();
+                timer.schedule(task = new StateTimer(), 15000);
                 break;
-            case ERROR_CARD_SCREEN:
+            case ERROR_CARD_SCREEN: 
                 buttonsPanel.setVisible(false);
                 textPanel.setVisible(true);
-                titleText.setText("Targeta incorrecte");
-                {
-                    try {
-                        Thread.sleep(500);
-                    } catch (InterruptedException ex) {
-                        Logger.getLogger(StartPanel.class.getName()).log(Level.SEVERE, null, ex);
-                    }
-                }
-                changeScreen(ScreenState.START_SCREEN);
+                titleText.setText("<html><font color='red'> Targeta  incorrecte </html>");
+                if(task != null) task.cancel();
+                timer.schedule(task = new StateTimer(), 3000);
                 break;
         }
         this.state = state;
@@ -82,6 +88,7 @@ public class StartPanel extends javax.swing.JPanel implements java.awt.event.Key
     public StartPanel(PanelListener listener) {
         buffer = new char[10];
         this.listener = listener;
+        timer = new Timer();
         initComponents();
         changeScreen(ScreenState.START_SCREEN);
         JButton rightBtn = (JButton) splitPanel.getRightComponent();
@@ -145,6 +152,7 @@ public class StartPanel extends javax.swing.JPanel implements java.awt.event.Key
                     Logger.getLogger(StartPanel.class.getName()).log(Level.SEVERE, null, ex);
                 }
                 db.disconnect();        
+                if(task != null) task.cancel();
                 listener.startSession(null, fuelPrice);
             }
         });
@@ -168,10 +176,10 @@ public class StartPanel extends javax.swing.JPanel implements java.awt.event.Key
         
         if (user == null) {
             changeScreen(ScreenState.ERROR_CARD_SCREEN);
-        }
-        else {
+        } else {
             try {
                 fuelPrice = db.getFuelPrice(true);
+                if(task != null) task.cancel();
                 listener.startSession(user, fuelPrice); 
             } catch (SQLException ex) {
                 Logger.getLogger(StartPanel.class.getName()).log(Level.SEVERE, null, ex);
@@ -308,6 +316,17 @@ public class StartPanel extends javax.swing.JPanel implements java.awt.event.Key
     @Override
     public void keyReleased(KeyEvent e) {
        
+    }
+    
+    private class StateTimer extends TimerTask {
+        
+        @Override
+        public void run() {
+            if(state != ScreenState.START_SCREEN) {
+                changeScreen(ScreenState.START_SCREEN);
+            }
+        }
+    
     }
 }
 

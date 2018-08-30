@@ -14,6 +14,8 @@ import java.awt.event.KeyEvent;
 import java.sql.SQLException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.Timer;
+import java.util.TimerTask;
 
 /**
  *
@@ -23,6 +25,7 @@ public class InfoPanel extends javax.swing.JPanel {
     User user;
     Refuel refuel;
     float fuelPrice, liters, finalPrice;
+    private Timer timer;
     
     
     public void setPanelInfo(User user, float fuelPrice) {
@@ -33,14 +36,17 @@ public class InfoPanel extends javax.swing.JPanel {
            nameTxt.setText(aux); 
         }
         jLabel2.setText(Float.toString(fuelPrice));
+        
+        //temporitzador
+        timer.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                finishSession();
+            }
+        }, 30000);
+        
     }
     
-    //Sha de trure aquesta funcio???
-    private void cardDetected(String code) {
-        System.out.println("card detected");
-        System.out.println(code);
-    }
-
     public interface EndListener {
         void endPanel();
     }
@@ -55,24 +61,29 @@ public class InfoPanel extends javax.swing.JPanel {
         this.refuel = new Refuel();
         this.liters = this.finalPrice = 0;
         this.user = null;
+        timer = new Timer();
         
         initComponents();
         endBtn.addActionListener((ActionEvent e) -> {
-            //canviar pantalla
-            Ticket ticket = new Ticket();
-            ticket.printTicket(user, refuel);
-            dbController db = new dbController();
-            db.connect();
-            
-            //descomentar quan el refuel estigui inicialitzat
-            /*try {
-                db.saveRefuel(refuel);
-            } catch (SQLException ex) {
-                Logger.getLogger(InfoPanel.class.getName()).log(Level.SEVERE, null, ex);
-            }*/
-            db.disconnect();
-            listener.endPanel();
+            finishSession();
         });
+    }
+    
+    private void finishSession() {
+        //canviar pantalla
+        Ticket ticket = new Ticket();
+        ticket.printTicket(user, refuel);
+        dbController db = new dbController();
+        db.connect();
+
+        //descomentar quan el refuel estigui inicialitzat
+        /*try {
+            db.saveRefuel(refuel);
+        } catch (SQLException ex) {
+            Logger.getLogger(InfoPanel.class.getName()).log(Level.SEVERE, null, ex);
+        }*/
+        db.disconnect();
+        listener.endPanel();
     }
 
     /**
