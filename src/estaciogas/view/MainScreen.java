@@ -15,7 +15,7 @@ import java.awt.image.BufferedImage;
  *
  * @author eduard
  */
-public class MainScreen extends javax.swing.JFrame implements java.awt.event.KeyListener {
+public class MainScreen extends javax.swing.JFrame {
 
     private static final String STARTPANEL = "start panel";
     private static final String INFOPANEL = "info panel";
@@ -38,6 +38,7 @@ public class MainScreen extends javax.swing.JFrame implements java.awt.event.Key
         mainPanel.add(infoPanel = new InfoPanel(new InfoPanel.EndListener() {
             @Override
             public void endPanel() {
+                startPanel.startScreen();
                 changePanel(STARTPANEL);
             }
         }), INFOPANEL);
@@ -124,9 +125,6 @@ public class MainScreen extends javax.swing.JFrame implements java.awt.event.Key
                 MainScreen m = new MainScreen();
                 m.setSize(800,480); //set the display resolution
                 
-                m.addKeyListener(m); //tmp
-                m.setFocusable(true);//tmp
-                
                 //hide the cursor
                 BufferedImage cursorImg = new BufferedImage(16,16,BufferedImage.TYPE_INT_ARGB);
                 m.getContentPane().setCursor(Toolkit.getDefaultToolkit().createCustomCursor(cursorImg, new Point(0,0), INFOPANEL));
@@ -141,19 +139,4 @@ public class MainScreen extends javax.swing.JFrame implements java.awt.event.Key
     private javax.swing.JPanel mainPanel;
     // End of variables declaration//GEN-END:variables
 
-    @Override
-    public void keyTyped(KeyEvent e) {
-  
-    }
-
-    @Override
-    public void keyPressed(KeyEvent e) {
-        if(e.getKeyCode() == KeyEvent.VK_ESCAPE) {
-            System.exit(0);
-        }
-    }
-
-    @Override
-    public void keyReleased(KeyEvent e) {
-    }
 }

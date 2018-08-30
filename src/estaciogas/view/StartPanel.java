@@ -33,6 +33,10 @@ public class StartPanel extends javax.swing.JPanel implements java.awt.event.Key
        ERROR_CARD_SCREEN
     }
     
+    public void startScreen() {
+        changeScreen(ScreenState.START_SCREEN);
+    }
+    
     private PanelListener listener;
     private ScreenState state;
     
@@ -254,7 +258,7 @@ public class StartPanel extends javax.swing.JPanel implements java.awt.event.Key
            pointer++;
        } else {
            if(pointer == 10 && e.getKeyChar() == '\n') {
-               cardDetected(String.valueOf(buffer));  
+               cardDetected(String.valueOf(buffer));
            } 
            pointer = 0;
        }
@@ -263,7 +267,9 @@ public class StartPanel extends javax.swing.JPanel implements java.awt.event.Key
 
     @Override
     public void keyPressed(KeyEvent e) {
-      
+        if(e.getKeyCode() == KeyEvent.VK_ESCAPE) {
+            System.exit(0);
+        }
     }
 
     @Override
