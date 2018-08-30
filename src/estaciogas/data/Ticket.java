@@ -41,6 +41,7 @@ public class Ticket implements Printable{
   private static final int OFFSET_WIDTH = 14;
   private static final int WIDTH = 132;
   private static final int CENTER = 132/2;
+  private static final int RIGHT_OFFSET = 5;
   int y; //variable que representa a l'alçada on es troba el cursor
 
  
@@ -98,18 +99,57 @@ public class Ticket implements Printable{
     g.drawString(s, x, h);
   }
   
-  private void drawUserInfo(Graphics2D g2d) {
+  private String printPartnerNumber(int number) {
+      String retornar = null;
+      String aux = Integer.toString(number);
+      int mida = aux.length();
+      if (mida == 1) retornar = "000"+aux;
+      else if (mida == 2) retornar = "00"+aux;
+      else if (mida == 2) retornar = "0"+aux;
+      else retornar = aux;
+      return retornar;
+  }
+  
+  private void drawPartnerInfo(Graphics2D g2d) {
       DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");  
       LocalDateTime now = LocalDateTime.now();
       String aux = now.format(dtf);
       drawEndString(aux, WIDTH, y, g2d); y+=15;
+      g2d.setFont(new Font("Arial",Font.PLAIN,8));
+      String aux1, aux2, auxFinal;
+      aux1 = "Núm. Soci: ";
+      aux2 = printPartnerNumber(user.getId());
+      auxFinal = aux1+aux2;
+      g2d.drawString(auxFinal,RIGHT_OFFSET, y); y+=10;
+      aux1 = "Hangar: ";
+      if (user.getHangar_name() != null) 
+          aux2 = "H" + user.getHangar_name() + "  " + user.getHangar_place(); 
+      else aux2 = "No registrat";
+      auxFinal = aux1+aux2;
+      g2d.drawString(auxFinal,RIGHT_OFFSET, y); y+=10;
+      aux1 = "Mètode de pagament: ";
+      aux2 = user.getPayment_method();
+      auxFinal = aux1+aux2;
+      g2d.drawString(auxFinal,RIGHT_OFFSET, y); y+=15;
+      g2d.setFont(new Font("Arial",Font.PLAIN,7));
+      drawCenteredString("- - - - - - - - - - - - - - - - - - - -", 66, y, g2d); y+= 15;      
+  }
+  private void drawNoPartnerInfo(Graphics2D g2d) {
+      DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");  
+      LocalDateTime now = LocalDateTime.now();
+      String aux = now.format(dtf);
+      drawEndString(aux, WIDTH, y, g2d); y+=20;
+      g2d.setFont(new Font("Arial",Font.PLAIN,8));
+      g2d.drawString("L'usuari no és soci.", 0, y); y+=15;
+      g2d.setFont(new Font("Arial",Font.PLAIN,7));
+      drawCenteredString("- - - - - - - - - - - - - - - - - - - -", 66, y, g2d); y+= 15;
       
   }
  
   private void drawHeader(Graphics2D g2d) {
     BufferedImage img = null;
     try {
-        img = ImageIO.read(new File("/home/eloi/proves/lpbt.png"));
+        img = ImageIO.read(new File("/home/eloi/proves/lpbt130.png"));
     } catch (IOException ex) {
         Logger.getLogger(Ticket.class.getName()).log(Level.SEVERE, null, ex);
     }
@@ -123,8 +163,22 @@ public class Ticket implements Printable{
     drawCenteredString("- - - - - - - - - - - - - - - - - - - -", 66, y, g2d); y+= 15;
   }
   
-  private void drawRefuelInfo(Graphics g) {
-      
+  private void drawRefuelInfo(Graphics2D g2d) {
+      BufferedImage img = null;
+    try {
+        img = ImageIO.read(new File("/home/eloi/proves/E520.png"));
+    } catch (IOException ex) {
+        Logger.getLogger(Ticket.class.getName()).log(Level.SEVERE, null, ex);
+    }
+    g2d.setFont(new Font("Arial",Font.PLAIN,8));
+    drawCenteredString("Sense Plom 95",CENTER, y, g2d); y+=5;
+    g2d.drawImage(img, null, 56,y);y+=30;
+    String auxFinal = "Litres: " + Float.toString(refuel.getLiters());
+    g2d.drawString(auxFinal,RIGHT_OFFSET, y); y+=10;
+    auxFinal = "Preu: " + Float.toString(refuel.getPrice());
+    g2d.drawString(auxFinal,RIGHT_OFFSET, y); y+=15;  
+    g2d.setFont(new Font("Arial",Font.PLAIN,6));
+    drawCenteredString("Gràcies per la seva visita, bon vol!", CENTER, y, g2d);    
   }
   
   @Override
@@ -135,7 +189,8 @@ public class Ticket implements Printable{
             g2d.translate((int) pageFormat.getImageableX()+OFFSET_WIDTH,(int) pageFormat.getImageableY());
             result = PAGE_EXISTS;
             drawHeader(g2d);
-            drawUserInfo(g2d);
+            if (user == null) drawNoPartnerInfo(g2d);
+            else drawPartnerInfo(g2d);
             drawRefuelInfo(g2d);
         }    
         return result;   

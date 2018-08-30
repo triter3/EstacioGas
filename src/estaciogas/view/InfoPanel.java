@@ -63,8 +63,6 @@ public class InfoPanel extends javax.swing.JPanel {
             ticket.printTicket(user, refuel);
             dbController db = new dbController();
             db.connect();
-            
-            //descomentar quan el refuel estigui inicialitzat
             /*try {
                 db.saveRefuel(refuel);
             } catch (SQLException ex) {
