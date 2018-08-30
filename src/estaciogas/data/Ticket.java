@@ -104,7 +104,6 @@ public class Ticket implements Printable{
       String aux = now.format(dtf);
       drawEndString(aux, WIDTH, y, g2d); y+=15;
       
-      
   }
  
   private void drawHeader(Graphics2D g2d) {
