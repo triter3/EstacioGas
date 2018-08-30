@@ -56,7 +56,8 @@ public class StartPanel extends javax.swing.JPanel implements java.awt.event.Key
             case CARD_SCREEN:
                 buttonsPanel.setVisible(false);
                 textPanel.setVisible(true);
-                titleText.setText("<html>Passa la tarjecta per el lector<br>Clica la pantalla per tornar al menú principal</html>");
+                titleText.setText("<html><div style='text-align: center;'>Passa la tarjecta per el lector<br><br>"
+                        + "<div><font size=-1>Clica la pantalla per tornar al menú principal </div> </div></html>");
                 break;
             case ERROR_CARD_SCREEN:
                 buttonsPanel.setVisible(false);
