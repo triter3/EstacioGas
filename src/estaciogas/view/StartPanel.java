@@ -167,19 +167,17 @@ public class StartPanel extends javax.swing.JPanel implements java.awt.event.Key
         }
         
         if (user == null) {
-            System.out.println("entra");
-            changeScreen(ScreenState.ERROR_CARD_SCREEN);   
+            changeScreen(ScreenState.ERROR_CARD_SCREEN);
         }
         else {
             try {
                 fuelPrice = db.getFuelPrice(true);
+                listener.startSession(user, fuelPrice); 
             } catch (SQLException ex) {
                 Logger.getLogger(StartPanel.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
-
         db.disconnect();
-        listener.startSession(user, fuelPrice); 
     }
 
     /**
