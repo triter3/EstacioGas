@@ -26,6 +26,7 @@ public class InfoPanel extends javax.swing.JPanel {
     Refuel refuel;
     float fuelPrice, liters, finalPrice;
     private Timer timer;
+    private TimerTask task;
     
     
     public void setPanelInfo(User user, float fuelPrice) {
@@ -38,7 +39,7 @@ public class InfoPanel extends javax.swing.JPanel {
         jLabel2.setText(Float.toString(fuelPrice));
         
         //temporitzador
-        timer.schedule(new TimerTask() {
+        timer.schedule(task = new TimerTask() {
             @Override
             public void run() {
                 finishSession();
@@ -83,6 +84,7 @@ public class InfoPanel extends javax.swing.JPanel {
             Logger.getLogger(InfoPanel.class.getName()).log(Level.SEVERE, null, ex);
         }*/
         db.disconnect();
+        task.cancel();
         listener.endPanel();
     }
 
