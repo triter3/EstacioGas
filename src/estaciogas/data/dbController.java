@@ -46,16 +46,15 @@ public class dbController {
     
     //return user with card_id or null if card_id not exists
     public User getUser(String card_id) throws SQLException {
-        User auxUser = new User();
+        User auxUser = null;
         stmt = c.createStatement();
         String query = "SELECT name, id, card_id, monthly_payament, hangar_number,"+
         " hangar_position FROM plane p, member m WHERE p.registration =" + 
         " m.plane_registration AND m.card_id = '" + card_id + "';";
+
         rs = stmt.executeQuery( query );
-        if (!rs.next()) {
-            auxUser = null;
-        }
-        else {
+        if (rs.next())  {
+           auxUser = new User();
            auxUser.setName(rs.getString("name"));
            auxUser.setId(rs.getInt("id"));
            auxUser.setCard_id(rs.getString("card_id"));

@@ -133,7 +133,7 @@ public class StartPanel extends javax.swing.JPanel implements java.awt.event.Key
             @Override
             public void actionPerformed(ActionEvent e) {
                 /*
-                * Agafar gasolina 
+                * Agafar gasolina no soci
                 */
                 dbController db = new dbController();
                 db.connect();
@@ -158,18 +158,25 @@ public class StartPanel extends javax.swing.JPanel implements java.awt.event.Key
         float fuelPrice = 0;
         dbController db = new dbController();
         db.connect();
-        User user = null;
+        User user = new User();
         try {
             user = db.getUser(code);
-            if (user == null) {
-                changeScreen(ScreenState.ERROR_CARD_SCREEN);   
-            }
-            else {
-                fuelPrice = db.getFuelPrice(true);
-            }
         } catch (SQLException ex) {
-            //tractar sql error
+            Logger.getLogger(StartPanel.class.getName()).log(Level.SEVERE, null, ex);
         }
+        
+        if (user == null) {
+            System.out.println("entra");
+            changeScreen(ScreenState.ERROR_CARD_SCREEN);   
+        }
+        else {
+            try {
+                fuelPrice = db.getFuelPrice(true);
+            } catch (SQLException ex) {
+                Logger.getLogger(StartPanel.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+
         db.disconnect();
         listener.startSession(user, fuelPrice); 
     }
