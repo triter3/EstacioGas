@@ -91,12 +91,6 @@ public class StartPanel extends javax.swing.JPanel implements java.awt.event.Key
         timer = new Timer();
         initComponents();
         changeScreen(ScreenState.START_SCREEN);
-        JButton rightBtn = (JButton) splitPanel.getRightComponent();
-        JButton leftBtn = (JButton) splitPanel.getLeftComponent();
-        rightBtn.setText("Socis");
-        leftBtn.setText("No Socis");
-        rightBtn.setFont(new java.awt.Font("Arial", java.awt.Font.PLAIN, 30));
-        leftBtn.setFont(new java.awt.Font("Arial", java.awt.Font.PLAIN, 30));
         titleText.addMouseListener(new MouseListener() {
             @Override
             public void mouseClicked(MouseEvent e) {
@@ -198,12 +192,24 @@ public class StartPanel extends javax.swing.JPanel implements java.awt.event.Key
     private void initComponents() {
 
         jLayeredPane1 = new javax.swing.JLayeredPane();
+        buttonsPanel = new javax.swing.JPanel();
+        leftBtn = new javax.swing.JButton();
+        rightBtn = new javax.swing.JButton();
         textPanel = new javax.swing.JPanel();
         titleText = new javax.swing.JLabel();
-        buttonsPanel = new javax.swing.JPanel();
-        splitPanel = new javax.swing.JSplitPane();
 
         setBackground(new java.awt.Color(133, 187, 251));
+
+        buttonsPanel.setBackground(new java.awt.Color(133, 187, 251));
+        buttonsPanel.setLayout(new java.awt.GridLayout(1, 0, 20, 0));
+
+        leftBtn.setFont(new java.awt.Font("Ubuntu", 1, 24)); // NOI18N
+        leftBtn.setText("No Soci");
+        buttonsPanel.add(leftBtn);
+
+        rightBtn.setFont(new java.awt.Font("Ubuntu", 1, 24)); // NOI18N
+        rightBtn.setText("Soci");
+        buttonsPanel.add(rightBtn);
 
         textPanel.setBackground(new java.awt.Color(133, 187, 251));
 
@@ -216,41 +222,18 @@ public class StartPanel extends javax.swing.JPanel implements java.awt.event.Key
         textPanel.setLayout(textPanelLayout);
         textPanelLayout.setHorizontalGroup(
             textPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(titleText, javax.swing.GroupLayout.DEFAULT_SIZE, 799, Short.MAX_VALUE)
+            .addGroup(textPanelLayout.createSequentialGroup()
+                .addGap(84, 84, 84)
+                .addComponent(titleText, javax.swing.GroupLayout.DEFAULT_SIZE, 619, Short.MAX_VALUE)
+                .addGap(96, 96, 96))
         );
         textPanelLayout.setVerticalGroup(
             textPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addComponent(titleText, javax.swing.GroupLayout.DEFAULT_SIZE, 432, Short.MAX_VALUE)
         );
 
-        buttonsPanel.setBackground(new java.awt.Color(133, 187, 251));
-
-        splitPanel.setResizeWeight(0.5);
-        splitPanel.setName("aa"); // NOI18N
-
-        javax.swing.GroupLayout buttonsPanelLayout = new javax.swing.GroupLayout(buttonsPanel);
-        buttonsPanel.setLayout(buttonsPanelLayout);
-        buttonsPanelLayout.setHorizontalGroup(
-            buttonsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 799, Short.MAX_VALUE)
-            .addGroup(buttonsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                .addGroup(buttonsPanelLayout.createSequentialGroup()
-                    .addContainerGap()
-                    .addComponent(splitPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 775, Short.MAX_VALUE)
-                    .addContainerGap()))
-        );
-        buttonsPanelLayout.setVerticalGroup(
-            buttonsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 432, Short.MAX_VALUE)
-            .addGroup(buttonsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                .addGroup(buttonsPanelLayout.createSequentialGroup()
-                    .addContainerGap()
-                    .addComponent(splitPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 408, Short.MAX_VALUE)
-                    .addContainerGap()))
-        );
-
-        jLayeredPane1.setLayer(textPanel, javax.swing.JLayeredPane.DEFAULT_LAYER);
         jLayeredPane1.setLayer(buttonsPanel, javax.swing.JLayeredPane.DEFAULT_LAYER);
+        jLayeredPane1.setLayer(textPanel, javax.swing.JLayeredPane.DEFAULT_LAYER);
 
         javax.swing.GroupLayout jLayeredPane1Layout = new javax.swing.GroupLayout(jLayeredPane1);
         jLayeredPane1.setLayout(jLayeredPane1Layout);
@@ -258,13 +241,19 @@ public class StartPanel extends javax.swing.JPanel implements java.awt.event.Key
             jLayeredPane1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addComponent(textPanel, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
             .addGroup(jLayeredPane1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                .addComponent(buttonsPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jLayeredPane1Layout.createSequentialGroup()
+                    .addContainerGap()
+                    .addComponent(buttonsPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 775, Short.MAX_VALUE)
+                    .addContainerGap()))
         );
         jLayeredPane1Layout.setVerticalGroup(
             jLayeredPane1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addComponent(textPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
             .addGroup(jLayeredPane1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                .addComponent(buttonsPanel, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addGroup(jLayeredPane1Layout.createSequentialGroup()
+                    .addContainerGap()
+                    .addComponent(buttonsPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addContainerGap()))
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
@@ -283,7 +272,8 @@ public class StartPanel extends javax.swing.JPanel implements java.awt.event.Key
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JPanel buttonsPanel;
     private javax.swing.JLayeredPane jLayeredPane1;
-    private javax.swing.JSplitPane splitPanel;
+    private javax.swing.JButton leftBtn;
+    private javax.swing.JButton rightBtn;
     private javax.swing.JPanel textPanel;
     private javax.swing.JLabel titleText;
     // End of variables declaration//GEN-END:variables
