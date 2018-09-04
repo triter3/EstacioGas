@@ -19,11 +19,11 @@ import java.util.logging.Logger;
  */
 public class dbController {
     private static final String url = "jdbc:postgresql://localhost/ASDTgas";
-    private static final String user = "eloi";
+    private static final String user = "eduard";
     private static final String password = "hola";
     
     Connection c = null;
-  
+    
     public void connect() {
         try {
             c = DriverManager.getConnection(url, user, password);

@@ -13,6 +13,8 @@ import java.awt.event.ActionEvent;
 import java.sql.SQLException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.Timer;
+import java.util.TimerTask;
 
 /**
  *
@@ -22,7 +24,10 @@ public class InfoPanel extends javax.swing.JPanel {
     User user;
     Refuel refuel;
     float fuelPrice, liters, finalPrice;
-      
+    private Timer timer;
+    private TimerTask task;
+    
+    
     public void setPanelInfo(User user, float fuelPrice) {
         this.user = user;
         this.liters = this.finalPrice = 0;
@@ -35,6 +40,15 @@ public class InfoPanel extends javax.swing.JPanel {
             nameTxt.setText(""); 
         }
         jLabel2.setText(Float.toString(fuelPrice));
+        
+        //temporitzador
+        timer.schedule(task = new TimerTask() {
+            @Override
+            public void run() {
+                finishSession();
+            }
+        }, 30000);
+        
     }
     
     private void saveRefuelInfo() {
@@ -64,23 +78,30 @@ public class InfoPanel extends javax.swing.JPanel {
         this.refuel = new Refuel();
         this.liters = this.finalPrice = 0;
         this.user = null;
+        timer = new Timer();
         
         initComponents();
         endBtn.addActionListener((ActionEvent e) -> {
-            //canviar pantalla
-            saveRefuelInfo();
-            Ticket ticket = new Ticket();
-            ticket.printTicket(user, refuel);
-            dbController db = new dbController();
-            db.connect();
-            try {
-                db.saveRefuel(refuel);
-            } catch (SQLException ex) {
-                Logger.getLogger(InfoPanel.class.getName()).log(Level.SEVERE, null, ex);
-            }
-            db.disconnect();
-            listener.endPanel();
+            finishSession();
         });
+    }
+    
+    private void finishSession() {
+        //canviar pantalla
+        Ticket ticket = new Ticket();
+        ticket.printTicket(user, refuel);
+        dbController db = new dbController();
+        db.connect();
+
+        //descomentar quan el refuel estigui inicialitzat
+        /*try {
+            db.saveRefuel(refuel);
+        } catch (SQLException ex) {
+            Logger.getLogger(InfoPanel.class.getName()).log(Level.SEVERE, null, ex);
+        }*/
+        db.disconnect();
+        task.cancel();
+        listener.endPanel();
     }
 
     /**
