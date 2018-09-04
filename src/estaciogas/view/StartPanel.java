@@ -166,7 +166,6 @@ public class StartPanel extends javax.swing.JPanel implements java.awt.event.Key
         }
         
         if (user == null) {
-            System.out.println("entra");
             changeScreen(ScreenState.ERROR_CARD_SCREEN);   
         }
         else {

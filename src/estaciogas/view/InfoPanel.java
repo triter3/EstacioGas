@@ -10,7 +10,6 @@ import estaciogas.data.Ticket;
 import estaciogas.data.User;
 import estaciogas.data.dbController;
 import java.awt.event.ActionEvent;
-import java.awt.event.KeyEvent;
 import java.sql.SQLException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -23,18 +22,28 @@ public class InfoPanel extends javax.swing.JPanel {
     User user;
     Refuel refuel;
     float fuelPrice, liters, finalPrice;
-    
-    
+      
     public void setPanelInfo(User user, float fuelPrice) {
         this.user = user;
+        this.liters = this.finalPrice = 0;
         this.fuelPrice = fuelPrice;
         if (user != null) {
            String aux = "Benvingut " + user.getName();
            nameTxt.setText(aux); 
         }
+        else {
+            nameTxt.setText(""); 
+        }
         jLabel2.setText(Float.toString(fuelPrice));
     }
     
+    private void saveRefuelInfo() {
+        refuel.setLiters(liters);
+        if (user != null) refuel.setMember_id(user.getId()); 
+        else refuel.setMember_id(-1);
+        refuel.setPrice(finalPrice);
+        refuel.setPrice_liters(fuelPrice);
+    }
     //Sha de trure aquesta funcio???
     private void cardDetected(String code) {
         System.out.println("card detected");
@@ -59,15 +68,16 @@ public class InfoPanel extends javax.swing.JPanel {
         initComponents();
         endBtn.addActionListener((ActionEvent e) -> {
             //canviar pantalla
+            saveRefuelInfo();
             Ticket ticket = new Ticket();
             ticket.printTicket(user, refuel);
             dbController db = new dbController();
             db.connect();
-            /*try {
+            try {
                 db.saveRefuel(refuel);
             } catch (SQLException ex) {
                 Logger.getLogger(InfoPanel.class.getName()).log(Level.SEVERE, null, ex);
-            }*/
+            }
             db.disconnect();
             listener.endPanel();
         });

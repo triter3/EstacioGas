@@ -18,7 +18,6 @@ import static java.awt.print.Printable.NO_SUCH_PAGE;
 import static java.awt.print.Printable.PAGE_EXISTS;
 import java.awt.print.PrinterException;
 import java.awt.print.PrinterJob;
-import java.io.File;
 import java.io.IOException;
 import java.time.format.DateTimeFormatter;
 import java.util.logging.Level;
@@ -79,7 +78,9 @@ public class Ticket implements Printable{
       this.refuel = refuel;
       PrinterJob pj = PrinterJob.getPrinterJob();        
       pj.setPrintable(this,getPageFormat(pj));
-      try {        
+      
+      try {  
+          
            pj.print();  
       }
        catch (PrinterException ex) {
@@ -149,7 +150,7 @@ public class Ticket implements Printable{
   private void drawHeader(Graphics2D g2d) {
     BufferedImage img = null;
     try {
-        img = ImageIO.read(new File("/home/eloi/proves/lpbt130.png"));
+        img = ImageIO.read(getClass().getResourceAsStream("/res/lpbt130.png"));
     } catch (IOException ex) {
         Logger.getLogger(Ticket.class.getName()).log(Level.SEVERE, null, ex);
     }
@@ -164,9 +165,10 @@ public class Ticket implements Printable{
   }
   
   private void drawRefuelInfo(Graphics2D g2d) {
+      
       BufferedImage img = null;
     try {
-        img = ImageIO.read(new File("/home/eloi/proves/E520.png"));
+        img = ImageIO.read(getClass().getResourceAsStream("/res/HOLA2.png"));
     } catch (IOException ex) {
         Logger.getLogger(Ticket.class.getName()).log(Level.SEVERE, null, ex);
     }
@@ -185,6 +187,7 @@ public class Ticket implements Printable{
   public int print(Graphics graphics, PageFormat pageFormat, int pageIndex) {
      int result = NO_SUCH_PAGE;    
         if (pageIndex == 0) {   
+            System.out.println("Pinta be1");
             Graphics2D g2d = (Graphics2D) graphics;
             g2d.translate((int) pageFormat.getImageableX()+OFFSET_WIDTH,(int) pageFormat.getImageableY());
             result = PAGE_EXISTS;
@@ -192,6 +195,7 @@ public class Ticket implements Printable{
             if (user == null) drawNoPartnerInfo(g2d);
             else drawPartnerInfo(g2d);
             drawRefuelInfo(g2d);
+            System.out.println("Pinta be2");
         }    
         return result;   
   }

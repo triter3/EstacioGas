@@ -78,8 +78,11 @@ public class dbController {
     
     public void saveRefuel(Refuel refuel) throws SQLException {
        Statement stmt = c.createStatement();
+       String auxMemberId; 
+       if (refuel.getMember_id()< 0)auxMemberId="null";
+       else auxMemberId = Integer.toString(refuel.getMember_id());
        String query = "INSERT INTO refuel (member_id, liters, price, price_liters) VALUES (" 
-               + Integer.toString(refuel.getMember_id()) + ", " + Float.toString(refuel.getLiters())
+               + auxMemberId + ", " + Float.toString(refuel.getLiters())
                + ", " + Float.toString(refuel.getPrice()) + ", "
                + Float.toString(refuel.getPrice_liters()) + ");";
         stmt.executeUpdate(query);
