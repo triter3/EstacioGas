@@ -7,9 +7,11 @@ package estaciogas.data;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.sql.Types;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -19,7 +21,7 @@ import java.util.logging.Logger;
  */
 public class dbController {
     private static final String url = "jdbc:postgresql://localhost/ASDTgas";
-    private static final String user = "eduard";
+    private static final String user = "eloi";
     private static final String password = "hola";
     
     Connection c = null;
@@ -47,17 +49,16 @@ public class dbController {
         User auxUser = null;
         Statement stmtUser = c.createStatement();
         Statement stmtPlane = c.createStatement();
-        String queryUser = "SELECT name, id, card_id, monthly_payament, plane_registration " + 
+        String queryUser = "SELECT name, id, card_id, payment_method, plane_registration, disabled " + 
         "FROM member WHERE card_id = '" + card_id + "';";
-        ResultSet rsUser = stmtUser.executeQuery( queryUser );
-        
+        ResultSet rsUser = stmtUser.executeQuery( queryUser );  
         if (rsUser.next())  {
            auxUser = new User();
            auxUser.setName(rsUser.getString("name"));
            auxUser.setId(rsUser.getInt("id"));
            auxUser.setCard_id(rsUser.getString("card_id"));
-           //auxUser.setPayment_method(rs.getString("monthly_payment"));
-           //mirar si se li  permet treure o no  
+           auxUser.setPayment_method(rsUser.getString("payment_method"));
+           auxUser.setDisabled(rsUser.getBoolean("disabled"));
            String matricula = rsUser.getString("plane_registration");
            if (matricula != null) {
                String queryPlane = "SELECT *  FROM plane WHERE registration = '" + matricula +"';";
@@ -76,17 +77,17 @@ public class dbController {
         return auxUser;
     }
     
-    public void saveRefuel(Refuel refuel) throws SQLException {
-       Statement stmt = c.createStatement();
-       String auxMemberId; 
-       if (refuel.getMember_id()< 0)auxMemberId="null";
-       else auxMemberId = Integer.toString(refuel.getMember_id());
-       String query = "INSERT INTO refuel (member_id, liters, price, price_liters) VALUES (" 
-               + auxMemberId + ", " + Float.toString(refuel.getLiters())
-               + ", " + Float.toString(refuel.getPrice()) + ", "
-               + Float.toString(refuel.getPrice_liters()) + ");";
-        stmt.executeUpdate(query);
-        stmt.close();
+    public void saveRefuel(Refuel refuel) throws SQLException { 
+       String query = "INSERT INTO refuel (member_id, liters, price, price_liters)" 
+               + "VALUES (?, ?, ?, ? ) " ;
+       PreparedStatement pst = c.prepareStatement(query);    
+       if (refuel.getMember_id() < 0) pst.setNull(1, Types.INTEGER);
+       else pst.setInt(1, refuel.getMember_id());
+       pst.setFloat(2, refuel.getLiters());
+       pst.setFloat(3, refuel.getPrice());
+       pst.setFloat(4, refuel.getPrice_liters());
+       pst.executeUpdate();
+       pst.close();
     }
     
     public float getFuelPrice(boolean partner) throws SQLException {

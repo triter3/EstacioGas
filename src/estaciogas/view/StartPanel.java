@@ -34,7 +34,8 @@ public class StartPanel extends javax.swing.JPanel implements java.awt.event.Key
        START_SCREEN,
        SELECT_SCREEN,
        CARD_SCREEN,
-       ERROR_CARD_SCREEN
+       ERROR_CARD_SCREEN,
+       ERROR_BLOCKED_USER
     }
     
     public void startScreen() {
@@ -75,6 +76,13 @@ public class StartPanel extends javax.swing.JPanel implements java.awt.event.Key
                 buttonsPanel.setVisible(false);
                 textPanel.setVisible(true);
                 titleText.setText("<html><font color='red'> Targeta  incorrecte </html>");
+                if(task != null) task.cancel();
+                timer.schedule(task = new StateTimer(), 3000);
+                break;
+            case ERROR_BLOCKED_USER:
+                buttonsPanel.setVisible(false);
+                textPanel.setVisible(true);
+                titleText.setText("<html><font color='red'> L'usuari està bloquejat </html>");
                 if(task != null) task.cancel();
                 timer.schedule(task = new StateTimer(), 3000);
                 break;
@@ -170,7 +178,10 @@ public class StartPanel extends javax.swing.JPanel implements java.awt.event.Key
         
         if (user == null) {
             changeScreen(ScreenState.ERROR_CARD_SCREEN);
-        } else {
+        } else if (user.isDisabled()) {
+            changeScreen(ScreenState.ERROR_BLOCKED_USER);
+        }
+        else {
             try {
                 fuelPrice = db.getFuelPrice(true);
                 if(task != null) task.cancel();

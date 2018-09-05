@@ -13,19 +13,32 @@ package estaciogas.data;
 public class User {
     
     int id; //Si es -1 no es soci
-    String name, card_id, payment_method, hangar_name, hangar_place; 
+    String name, card_id, payment_method, hangar_name, hangar_place;
+    boolean disabled;
     
     public User() {
         id = -1;
         card_id = payment_method = hangar_name = hangar_place = null;
+        disabled = false;
     }
 
-    public User(int id, String name, String surname, String card_id, String email, String telephone, String payment_method, String plane_registration, String hangar_name, String hangar_place) {
+    public User(int id, String name, String surname, String card_id, String email, 
+                String telephone, String payment_method, String plane_registration, 
+                String hangar_name, String hangar_place, boolean disabled) {
         this.id = id;
         this.card_id = card_id;
         this.payment_method = payment_method;
         this.hangar_name = hangar_name;
         this.hangar_place = hangar_place;
+        this.disabled = disabled;
+    }
+
+    public boolean isDisabled() {
+        return disabled;
+    }
+
+    public void setDisabled(boolean disabled) {
+        this.disabled = disabled;
     }
     
     public String getName() {

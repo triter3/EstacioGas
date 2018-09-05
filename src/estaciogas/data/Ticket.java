@@ -79,12 +79,11 @@ public class Ticket implements Printable{
       PrinterJob pj = PrinterJob.getPrinterJob();        
       pj.setPrintable(this,getPageFormat(pj));
       
-      try {  
-          
+      /*try {     
            pj.print();  
       }
        catch (PrinterException ex) {
-      }
+      }*/
     
   }
   
@@ -128,7 +127,7 @@ public class Ticket implements Printable{
       else aux2 = "No registrat";
       auxFinal = aux1+aux2;
       g2d.drawString(auxFinal,RIGHT_OFFSET, y); y+=10;
-      aux1 = "Mètode de pagament: ";
+      aux1 = "Pagament: ";
       aux2 = user.getPayment_method();
       auxFinal = aux1+aux2;
       g2d.drawString(auxFinal,RIGHT_OFFSET, y); y+=15;

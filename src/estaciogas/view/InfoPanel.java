@@ -5,6 +5,7 @@
  */
 package estaciogas.view;
 
+import estaciogas.data.FuelDispenser;
 import estaciogas.data.Refuel;
 import estaciogas.data.Ticket;
 import estaciogas.data.User;
@@ -20,12 +21,27 @@ import java.util.TimerTask;
  *
  * @author eduard
  */
-public class InfoPanel extends javax.swing.JPanel {
+public class InfoPanel extends javax.swing.JPanel implements FuelDispenser.FuelListener {
     User user;
     Refuel refuel;
     float fuelPrice, liters, finalPrice;
     private Timer timer;
     private TimerTask task;
+    
+    @Override
+    public void newData(float liters) {
+        jLabel5.setText(Float.toString(liters));
+        finalPrice = liters*fuelPrice;
+        jLabel3.setText(Float.toString(finalPrice));
+    }
+    
+    @Override
+    public void finalData(float liters) {
+        jLabel5.setText(Float.toString(liters));
+        finalPrice = liters*fuelPrice;
+        jLabel3.setText(Float.toString(finalPrice));
+        //engegar cronometre
+    }
     
     
     public void setPanelInfo(User user, float fuelPrice) {
@@ -49,6 +65,8 @@ public class InfoPanel extends javax.swing.JPanel {
             }
         }, 30000);
         
+        
+        
     }
     
     private void saveRefuelInfo() {
@@ -58,11 +76,7 @@ public class InfoPanel extends javax.swing.JPanel {
         refuel.setPrice(finalPrice);
         refuel.setPrice_liters(fuelPrice);
     }
-    //Sha de trure aquesta funcio???
-    private void cardDetected(String code) {
-        System.out.println("card detected");
-        System.out.println(code);
-    }
+
 
     public interface EndListener {
         void endPanel();
@@ -87,21 +101,25 @@ public class InfoPanel extends javax.swing.JPanel {
     }
     
     private void finishSession() {
-        //canviar pantalla
-        Ticket ticket = new Ticket();
-        ticket.printTicket(user, refuel);
-        dbController db = new dbController();
-        db.connect();
-
-        //descomentar quan el refuel estigui inicialitzat
-        /*try {
-            db.saveRefuel(refuel);
-        } catch (SQLException ex) {
-            Logger.getLogger(InfoPanel.class.getName()).log(Level.SEVERE, null, ex);
-        }*/
-        db.disconnect();
-        task.cancel();
-        listener.endPanel();
+        if (liters == 0) {
+            task.cancel();
+            listener.endPanel();
+        }
+        else {
+            Ticket ticket = new Ticket();
+            ticket.printTicket(user, refuel);
+            saveRefuelInfo();
+            dbController db = new dbController();
+            db.connect();
+            try {
+                db.saveRefuel(refuel);
+            } catch (SQLException ex) {
+                Logger.getLogger(InfoPanel.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            db.disconnect();
+            task.cancel();
+            listener.endPanel();
+        }
     }
 
     /**
