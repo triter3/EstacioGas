@@ -24,6 +24,7 @@ import java.util.TimerTask;
 public class InfoPanel extends javax.swing.JPanel implements FuelDispenser.FuelListener {
     User user;
     Refuel refuel;
+    FuelDispenser fuelDispenser;
     float fuelPrice, liters, finalPrice;
     private Timer timer;
     private TimerTask task;
@@ -40,7 +41,8 @@ public class InfoPanel extends javax.swing.JPanel implements FuelDispenser.FuelL
         jLabel5.setText(Float.toString(liters));
         finalPrice = liters*fuelPrice;
         jLabel3.setText(Float.toString(finalPrice));
-        //engegar cronometre
+        //temporitzador
+        finishSession();
     }
     
     
@@ -56,17 +58,8 @@ public class InfoPanel extends javax.swing.JPanel implements FuelDispenser.FuelL
             nameTxt.setText(""); 
         }
         jLabel2.setText(Float.toString(fuelPrice));
-        
-        //temporitzador
-        timer.schedule(task = new TimerTask() {
-            @Override
-            public void run() {
-                finishSession();
-            }
-        }, 30000);
-        
-        
-        
+        fuelDispenser = new FuelDispenser(this);
+        fuelDispenser.start();
     }
     
     private void saveRefuelInfo() {

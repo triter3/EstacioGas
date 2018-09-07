@@ -23,6 +23,7 @@ public class FuelDispenser extends Thread {
     final GpioController gpio;
     GpioPinDigitalInput dispenser;
     long time;
+    private boolean running = true;
 
     
     @Override
@@ -33,7 +34,7 @@ public class FuelDispenser extends Thread {
         boolean antState = false;
         boolean state = false;
         time = System.nanoTime();
-        while(true) {
+        while(running) {
             state = myButton.isHigh();
             if (myButton.isHigh() && antState == false) {
                 antState = true;
@@ -61,7 +62,12 @@ public class FuelDispenser extends Thread {
         }   
     }
     
-    public FuelDispenser() {
+    public void close() {
+        running = false;
+    }
+    
+    public FuelDispenser(FuelListener listener) {
+        fl = listener;
         gpio = GpioFactory.getInstance();
         dispenser = gpio.provisionDigitalInputPin(RaspiPin.GPIO_00);
         this.liters = 0;
